@@ -16,7 +16,7 @@ This project implements a SARIMAX model to predict the stock prices of Apple Inc
 6. [Methodology](#methodology)  
 7. [Results](#results)  
 8. [Contributions](#contributions)  
-9. [License](#license)
+  
 
 ---
 
@@ -121,9 +121,6 @@ The workflow is structured as follows:
 
 These metrics indicate that the SARIMAX model predicts Apple's stock price with minimal error.
 
-### Visualization
-A comparison of actual versus predicted stock prices highlights the model's accuracy:
-![Actual vs Predicted](assets/actual_vs_predicted.png)
 
 ---
 
