@@ -70,7 +70,7 @@ To run this project locally:
 
 ## Data Preparation
 
-1. **Dataset**: Historical stock prices of Apple Inc. should be saved in a CSV file named `price_apple.csv`. The data must include the following columns:
+1. **Dataset**: Historical stock prices of Apple Inc. should be saved in an XLSX file named `price_apple.xlsx`. The data must include the following columns:
    - `Date`
    - `Low`
    - `High`
