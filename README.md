@@ -59,7 +59,7 @@ To run this project locally:
    ```
 2. Navigate to the project directory:
    ```bash
-   cd apple-stock-sarimax
+   cd predicting-apple-stock-price
    ```
 3. Install dependencies:
    ```bash
