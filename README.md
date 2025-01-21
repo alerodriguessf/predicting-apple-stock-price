@@ -55,7 +55,7 @@ To run this project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/username/predicting-apple-stock-price.git
+   git clone https://https://github.com/alerodriguessf/predicting-apple-stock-price.git
    ```
 2. Navigate to the project directory:
    ```bash
