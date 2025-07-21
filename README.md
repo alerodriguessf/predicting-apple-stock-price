@@ -1,6 +1,4 @@
-Aqui está um **README.md** detalhado para o código fornecido, estruturado com base nas melhores práticas do mercado e na metodologia CRISP-DM:
 
----
 
 # Predicting Apple Stock Price Using SARIMAX
 
