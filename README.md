@@ -1,129 +1,140 @@
 
+# **Time Series Forecasting of Apple (AAPL) Stock Prices using SARIMAX**
 
-# Predicting Apple Stock Price Using SARIMAX
+## **Executive Summary**
 
-This project implements a SARIMAX model to predict the stock prices of Apple Inc. by leveraging historical stock data. The workflow encompasses data preprocessing, feature engineering, model training, and evaluation, following a systematic and reproducible approach.
+This project presents a robust framework for forecasting the daily stock price of Apple Inc. (AAPL) using a Seasonal Autoregressive Integrated Moving Average with Exogenous Regressors (SARIMAX) model. The objective was to develop a reliable short-term prediction model by leveraging historical price data. The methodology encompasses rigorous feature engineering, automated hyperparameter optimization via `auto_arima`, and a thorough evaluation of the model's predictive accuracy. The resulting model successfully captures the underlying trend of the stock price, demonstrating the effectiveness of SARIMAX for financial time series forecasting and establishing a strong baseline for future enhancements.
 
-## Table of Contents
+## **Table of Contents**
 
-1. [Overview](#overview)  
-2. [Features](#features)  
-3. [Technologies Used](#technologies-used)  
-4. [Installation](#installation)  
-5. [Data Preparation](#data-preparation)  
-6. [Methodology](#methodology)  
-7. [Results](#results)  
-8. [Contributions](#contributions)  
+1.  Project Context & Objective
+2.  End-to-End Methodology
+3.  Evaluation & Results
+4.  Technologies & Libraries
+5.  Usage & Replication
+6.  Conclusion & Future Work
+7.  Contributions
 
+-----
 
----
+## **Project Context & Objective**
 
-## Overview
+Forecasting stock prices is a notoriously challenging task due to market volatility and the complex interplay of numerous factors. The goal of this project was to build and evaluate a time series model capable of making accurate one-step-ahead predictions of Apple's daily stock price.
 
-Stock price prediction is a complex task due to the influence of numerous external factors. This project uses SARIMAX (Seasonal Autoregressive Integrated Moving Average with Exogenous Regressors) to predict future stock prices based on historical data and engineered features.
+The SARIMAX model was chosen for its ability to handle key time series characteristics:
 
----
+  * **Autoregressive (AR)**: Dependency on past values.
+  * **Integrated (I)**: Differencing to achieve stationarity.
+  * **Moving Average (MA)**: Dependency on past forecast errors.
+  * **Exogenous (X)**: Incorporation of external, predictive variables.
 
-## Features
+This makes SARIMAX a powerful and interpretable choice for this financial forecasting task.
 
-- **Automatic Hyperparameter Tuning**: Leverages the `auto_arima` function to identify the best SARIMA parameters.  
-- **Seasonal Decomposition**: Visualizes the trend, seasonality, and residuals in stock data.  
-- **Feature Scaling**: Scales features and target variables for improved model convergence.  
-- **Performance Evaluation**: Provides MSE and RMSE to assess the model's predictive performance.
+-----
 
----
+## **End-to-End Methodology**
 
-## Technologies Used
+The project followed a structured data science workflow from data ingestion to model evaluation.
 
-- Python 3.x  
-- Libraries:  
-  - `pandas`  
-  - `numpy`  
-  - `matplotlib`  
-  - `scipy`  
-  - `pmdarima`  
-  - `statsmodels`  
-  - `sklearn`  
+### 1\. Feature Engineering & Target Definition
 
----
+The raw dataset included daily `Low`, `High`, `Close`, `Adj Close`, and `Volume`.
 
-## Installation
+  * A new feature, `mean`, was engineered as the average of the `Low` and `High` prices. This helps to smooth out intra-day noise and provide a more stable price signal.
+  * The prediction target (`Actual`) was defined by shifting the `mean` column one step into the past (`shift(-1)`). This frames the problem as predicting the next day's average price based on the current day's information.
 
-To run this project locally:
+### 2\. Time Series Analysis & Decomposition
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/alerodriguessf/predicting-apple-stock-price.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd predicting-apple-stock-price
-   ```
-3. Install dependencies:
-   ```bash
-    !pip install scipy
-    !pip install pmdarima
-   ```
+An initial exploratory data analysis (EDA) was performed to understand the data's structure.
 
----
+  * The time series was visualized to identify long-term trends.
+  * Seasonal decomposition was applied using a 365-day period to formally inspect the **trend**, **seasonality**, and **residual** components of the series.
 
-## Data Preparation
+### 3\. Data Scaling & Preparation
 
-1. **Dataset**: Historical stock prices of Apple Inc. should be saved in a XLSX file named `price_apple.xlsx`. The data must include the following columns:
-   - `Date`
-   - `Low`
-   - `High`
-   - `Close`
-   - `Adj Close`
-   - `Volume`
-   
-2. **Loading Data**: The script automatically loads the data and preprocesses it, including:
-   - Converting dates to a `datetime` format.
-   - Engineering a `mean` column as the average of daily `Low` and `High`.
-   - Shifting the `mean` column to create a target variable (`Actual`).
+  * Features and the target variable were scaled using `sklearn.preprocessing.MinMaxScaler`. This normalizes all data into a [0, 1] range, which is critical for ensuring that the model's convergence is stable and not skewed by features of different magnitudes.
+  * The dataset was split into training (70%) and testing (30%) sets to facilitate a robust evaluation of the model's performance on unseen data.
 
----
+### 4\. Hyperparameter Optimization & Model Selection
 
-## Methodology
+  * The `pmdarima.auto_arima` function was employed to perform a stepwise search for the optimal non-seasonal order `(p, d, q)` for the model. This automates the hyperparameter tuning process, ensuring a data-driven model specification.
+  * The analysis identified **ARIMA(0, 1, 1)** as the best-fit model, indicating that the forecast is a function of one degree of differencing and the previous period's forecast error.
 
-The workflow is structured as follows:
+### 5\. SARIMAX Model Training
 
-1. **Exploratory Data Analysis**:
-   - Visualize the `mean` column for trends and seasonality.
-   - Perform seasonal decomposition.
+The final SARIMAX model was trained on the training dataset using:
 
-2. **Feature Scaling**:
-   - Normalize features and target variables using `MinMaxScaler`.
+  * **Endogenous Variable**: The scaled `Actual` stock price (`y`).
+  * **Exogenous Variables**: The scaled `Low`, `High`, `Close`, `Adj Close`, `Volume`, and `mean` columns (`X`).
+  * **Order**: `(0, 1, 1)` as determined by `auto_arima`.
 
-3. **Data Splitting**:
-   - Split the dataset into training (70%) and testing (30%).
+-----
 
-4. **Model Selection**:
-   - Automatically tune SARIMA parameters using `auto_arima`.
+## **Evaluation & Results**
 
-5. **Model Training**:
-   - Train the SARIMAX model using identified parameters and training data.
+The model's performance was assessed both quantitatively and qualitatively.
 
-6. **Prediction**:
-   - Predict future stock prices using the testing set.
+### Quantitative Analysis
 
-7. **Evaluation**:
-   - Compute MSE and RMSE for performance assessment.
+The model yielded strong performance metrics on the test set:
 
----
+  * **Mean Squared Error (MSE)**: `0.00015`
+  * **Root Mean Squared Error (RMSE)**: `0.01228`
 
-## Results
+Given that the target variable was scaled to a [0, 1] range, these extremely low error values indicate a high degree of precision and a very close fit to the actual data.
 
-### Model Performance
-- **Mean Squared Error (MSE)**: `0.00015083`
-- **Root Mean Squared Error (RMSE)**: `0.01228`
+### Qualitative Analysis
 
-These metrics indicate that the SARIMAX model predicts Apple's stock price with minimal error.
+A visual comparison of the predicted versus actual stock prices shows that the model effectively captures the direction and trend of the price movements. As is common with models incorporating moving average components, there is a slight lag, but the overall tracking is highly accurate.
 
----
+### Model Diagnostics
 
-## Contributions
+A deeper look at the model's statistical summary revealed:
 
-Contributions are welcome! If you encounter any issues or have suggestions for improvements, feel free to submit a pull request or open an issue.
+  * **Goodness of Fit**: A high Log-Likelihood and low AIC/BIC scores confirm a strong model fit.
+  * **Residuals Analysis**: The Ljung-Box test indicated no significant autocorrelation in the residuals (p \> 0.05), suggesting they behave like white noise. However, the Jarque-Bera test indicated that the residuals are not normally distributed and exhibit heteroskedasticity (non-constant variance). This is common in financial time series due to volatility clustering.
 
----
+-----
+
+## **Technologies & Libraries**
+
+  * **Python 3.x**
+  * **Core Libraries**: `pandas`, `numpy`, `matplotlib`
+  * **Time Series Modeling**: `statsmodels`, `pmdarima`
+  * **Data Preprocessing**: `sklearn`
+
+-----
+
+## **Usage & Replication**
+
+To replicate this analysis:
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/alerodriguessf/predicting-apple-stock-price.git
+    cd predicting-apple-stock-price
+    ```
+2.  Install the required dependencies:
+    ```python
+    pip install pandas numpy matplotlib statsmodels pmdarima scikit-learn
+    ```
+3.  Ensure the dataset, named `price_apple.xlsx`, is present in the root directory.
+4.  Execute the Jupyter Notebook `Portfolio_Predicting_Apple_Stock_Price_SARIMAX_20250114.ipynb`.
+
+-----
+
+## **Conclusion & Future Work**
+
+This project successfully demonstrates the implementation of a SARIMAX model for forecasting Apple's stock price. The model provides highly accurate trend predictions and serves as a robust baseline.
+
+Potential future enhancements include:
+
+  * **Modeling Volatility**: Address the observed heteroskedasticity by implementing ARCH/GARCH models alongside the SARIMAX framework to explicitly model periods of high and low volatility.
+  * **Incorporate Additional Exogenous Data**: Enrich the model with other predictive features, such as S\&P 500 index movements, tech sector ETFs, or sentiment analysis scores derived from financial news.
+  * **Comparative Analysis**: Benchmark the SARIMAX model's performance against other forecasting techniques, such as Long Short-Term Memory (LSTM) networks or Facebook's Prophet, to explore potential accuracy gains from more complex architectures.
+
+-----
+
+## **Contributions**
+
+Contributions, issues, and feature requests are welcome. Please feel free to open an issue or submit a pull request.
